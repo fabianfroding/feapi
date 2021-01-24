@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -121,6 +120,7 @@ public class GameManager : MonoBehaviour
                         players[currentPlayerIndex].gridPosition.y >= target.gridPosition.y - 1 &&
                         players[currentPlayerIndex].gridPosition.y <= target.gridPosition.y + 1)
                     {
+                        RemoveTileHighlights();
                         bool hit = Random.Range(0.0f, 1.0f) <= players[currentPlayerIndex].accuracy;
                         if (hit)
                         {

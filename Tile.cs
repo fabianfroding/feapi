@@ -12,6 +12,11 @@ public class Tile : MonoBehaviour
         GenerateNeighbors();
     }
 
+    public bool isEmpty() // TODO: Impl
+    {
+        return false;
+    }
+
     private void GenerateNeighbors()
     {
         neighbors = new List<Tile>();
