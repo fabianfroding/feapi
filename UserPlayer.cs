@@ -5,12 +5,6 @@ public class UserPlayer : Player
 
     public override void TurnUpdate()
     {
-        //highlight
-
-
-
-
-
         if (Vector3.Distance(moveDestination, transform.position) > 0.1f)
         {
             transform.position += (moveDestination - transform.position).normalized * moveSpeed * Time.deltaTime;
@@ -21,6 +15,7 @@ public class UserPlayer : Player
                 // TODO: Prompt user to action (Attack, Item, Wait etc)
                 actionTaken = true;
                 SetToGreyScale(true);
+                GameManager.instance.RemoveTileHighlights();
             }
         }
 
@@ -38,13 +33,18 @@ public class UserPlayer : Player
         {
             if (!moving)
             {
+                GameManager.instance.RemoveTileHighlights();
                 moving = true;
                 attacking = false;
+                Debug.Log("MRange: " + moveRange);
+                GameManager.instance.HighlightTilesAt(gridPosition, Color.blue, moveRange);
             }
             else
             {
                 moving = false;
                 attacking = false;
+                Debug.Log("ARange: " + attackRange);
+                GameManager.instance.RemoveTileHighlights();
             }
         }
 
@@ -54,13 +54,16 @@ public class UserPlayer : Player
         {
             if (!attacking)
             {
+                GameManager.instance.RemoveTileHighlights();
                 moving = false;
                 attacking = true;
+                GameManager.instance.HighlightTilesAt(gridPosition, Color.red, attackRange);
             }
             else
             {
                 moving = false;
                 attacking = false;
+                GameManager.instance.RemoveTileHighlights();
             }
         }
 

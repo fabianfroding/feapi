@@ -39,6 +39,27 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void HighlightTilesAt(Vector2 originLocation, Color highlightColor, int range)
+    {
+        Debug.Log("BRange: " + range);
+        List<Tile> highlightedTiles = TileHighlight.FindHighlight(map[(int)originLocation.x][(int)originLocation.y], range); // TODO: Put Unit movespeed instead of 4
+        foreach (Tile t in highlightedTiles)
+        {
+            t.GetComponent<SpriteRenderer>().material.color = highlightColor;
+        }
+    }
+
+    public void RemoveTileHighlights()
+    {
+        for (int i = 0; i < mapSize; i++)
+        {
+            for (int j = 0; j < mapSize; j++) // TODO: What if dimensions are different?
+            {
+                map[i][j].GetComponent<SpriteRenderer>().material.color = Color.white;
+            }
+        }
+    }
+
     private void OnGUI()
     {
         players[currentPlayerIndex].TurnOnGUI();
@@ -65,8 +86,15 @@ public class GameManager : MonoBehaviour
     {
         if (!players[currentPlayerIndex].actionTaken)
         {
-            players[currentPlayerIndex].moveDestination = destTile.transform.position;
-            players[currentPlayerIndex].gridPosition = destTile.gridPosition;
+            if (destTile.GetComponent<SpriteRenderer>().material.color != Color.white)
+            {
+                players[currentPlayerIndex].moveDestination = destTile.transform.position;
+                players[currentPlayerIndex].gridPosition = destTile.gridPosition;
+            }
+            else
+            {
+                Debug.Log("Destination unreachable");
+            }
         }
     }
 
@@ -74,43 +102,46 @@ public class GameManager : MonoBehaviour
     {
         if (!players[currentPlayerIndex].actionTaken)
         {
-            Player target = null;
-            for (int i = 0; i < players.Count; i++)
+            if (targetTile.GetComponent<SpriteRenderer>().material.color != Color.white)
             {
-                if (players[i].gridPosition == targetTile.gridPosition)
+                Player target = null;
+                for (int i = 0; i < players.Count; i++)
                 {
-                    target = players[i];
-                    break;
-                }
-            }
-
-            if (target != null)
-            {
-                if (players[currentPlayerIndex].gridPosition.x >= target.gridPosition.x - 1 &&
-                    players[currentPlayerIndex].gridPosition.x <= target.gridPosition.x + 1 &&
-                    players[currentPlayerIndex].gridPosition.y >= target.gridPosition.y - 1 &&
-                    players[currentPlayerIndex].gridPosition.y <= target.gridPosition.y + 1)
-                {
-                    bool hit = Random.Range(0.0f, 1.0f) <= players[currentPlayerIndex].accuracy;
-                    if (hit)
+                    if (players[i].gridPosition == targetTile.gridPosition)
                     {
-                        if (target.hp > 0)
+                        target = players[i];
+                        break;
+                    }
+                }
+
+                if (target != null)
+                {
+                    if (players[currentPlayerIndex].gridPosition.x >= target.gridPosition.x - 1 &&
+                        players[currentPlayerIndex].gridPosition.x <= target.gridPosition.x + 1 &&
+                        players[currentPlayerIndex].gridPosition.y >= target.gridPosition.y - 1 &&
+                        players[currentPlayerIndex].gridPosition.y <= target.gridPosition.y + 1)
+                    {
+                        bool hit = Random.Range(0.0f, 1.0f) <= players[currentPlayerIndex].accuracy;
+                        if (hit)
                         {
-                            float inflictedDmg = players[currentPlayerIndex].damageBase * (1f - target.defenseReduction);
-                            target.hp -= (int)inflictedDmg;
-                            Debug.Log(players[currentPlayerIndex].name + " hit " + target.name + " for " + inflictedDmg);
+                            if (target.hp > 0)
+                            {
+                                float inflictedDmg = players[currentPlayerIndex].damageBase * (1f - target.defenseReduction);
+                                target.hp -= (int)inflictedDmg;
+                                Debug.Log(players[currentPlayerIndex].name + " hit " + target.name + " for " + inflictedDmg);
+                            }
                         }
+                        else
+                        {
+                            Debug.Log(players[currentPlayerIndex].name + " missed " + target.name);
+                        }
+                        players[currentPlayerIndex].actionTaken = true;
+                        players[currentPlayerIndex].SetToGreyScale(true);
                     }
                     else
                     {
-                        Debug.Log(players[currentPlayerIndex].name + " missed " + target.name);
+                        Debug.Log("Target out of range");
                     }
-                    players[currentPlayerIndex].actionTaken = true;
-                    players[currentPlayerIndex].SetToGreyScale(true);
-                }
-                else
-                {
-                    Debug.Log("Target out of range");
                 }
             }
         }
@@ -140,7 +171,7 @@ public class GameManager : MonoBehaviour
         players.Add(player);
 
         UserPlayer player2 = ((GameObject)Instantiate(unitPrefab, new Vector3((mapSize - 1) - Mathf.Floor(mapSize / 2), -(mapSize - 1) + Mathf.Floor(mapSize / 2), 0), Quaternion.Euler(new Vector3()))).GetComponent<UserPlayer>();
-        player2.gridPosition = new Vector2(mapSize - 1, -(mapSize - 1));
+        player2.gridPosition = new Vector2(mapSize - 1, mapSize - 1);
         player2.name = "Player 2";
         players.Add(player2);
 

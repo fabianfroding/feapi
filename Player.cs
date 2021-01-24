@@ -20,6 +20,8 @@ public class Player : MonoBehaviour
     public float accuracy = 0.75f;
     public float defenseReduction = 0.15f;
     public int damageBase = 5;
+    public int attackRange = 2;
+    public int moveRange = 4;
 
     public bool actionTaken = false;
 
