@@ -54,7 +54,10 @@ public class GameManager : MonoBehaviour
         {
             for (int j = 0; j < mapSize; j++) // TODO: What if dimensions are different?
             {
-                map[i][j].GetComponent<SpriteRenderer>().material.color = Color.white;
+                if (!map[i][j].impassable)
+                {
+                    map[i][j].GetComponent<SpriteRenderer>().material.color = Color.white;
+                }
             }
         }
     }
@@ -66,7 +69,7 @@ public class GameManager : MonoBehaviour
 
     public void nextTurn()
     {
-        // Reset players greyscale.
+        // Reset greyscale.
         for (int i = 0; i < players.Count; i++)
         {
             players[i].SetToGreyScale(false);
@@ -85,9 +88,12 @@ public class GameManager : MonoBehaviour
     {
         if (!players[currentPlayerIndex].actionTaken)
         {
-            if (destTile.GetComponent<SpriteRenderer>().material.color != Color.white)
+            if (destTile.GetComponent<SpriteRenderer>().material.color != Color.white && !destTile.impassable)
             {
-                players[currentPlayerIndex].moveDestination = destTile.transform.position;
+                foreach (Tile t in TilePathFinder.FindPath(map[(int)players[currentPlayerIndex].gridPosition.x][(int)players[currentPlayerIndex].gridPosition.y], destTile))
+                {
+                    players[currentPlayerIndex].positionQueue.Add(map[(int)t.gridPosition.x][(int)t.gridPosition.y].transform.position);
+                }
                 players[currentPlayerIndex].gridPosition = destTile.gridPosition;
             }
             else

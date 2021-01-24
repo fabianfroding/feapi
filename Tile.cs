@@ -6,6 +6,7 @@ public class Tile : MonoBehaviour
     public Vector2 gridPosition = Vector2.zero;
     public List<Tile> neighbors = new List<Tile>();
     public int movementCost = 1;
+    public bool impassable = false;
 
     private void Start()
     {
@@ -57,6 +58,21 @@ public class Tile : MonoBehaviour
         else if (GameManager.instance.players[GameManager.instance.currentPlayerIndex].attacking)
         {
             GameManager.instance.attackWithCurrentPlayer(this);
+        }
+        else if (Input.GetMouseButton(1))
+        {
+            // Testing purposes
+            if (impassable)
+            {
+                impassable = false;
+                GetComponent<SpriteRenderer>().material.color = Color.white;
+            }
+            else
+            {
+                impassable = true;
+                GetComponent<SpriteRenderer>().material.color = Color.grey;
+            }
+
         }
         //Debug.Log("Grid: " + gridPosition.x + ", " + gridPosition.y);
     }

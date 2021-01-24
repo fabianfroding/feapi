@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 public class TilePath
 {
@@ -10,7 +11,7 @@ public class TilePath
 
     public TilePath(TilePath tp)
     {
-        tiles = tp.tiles;
+        tiles = tp.tiles.ToList();
         costOfPath = tp.costOfPath;
         lastTile = tp.lastTile;
     }

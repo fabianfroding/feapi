@@ -5,17 +5,23 @@ public class UserPlayer : Player
 
     public override void TurnUpdate()
     {
-        if (Vector3.Distance(moveDestination, transform.position) > 0.1f)
+        if (positionQueue.Count > 0)
         {
-            transform.position += (moveDestination - transform.position).normalized * moveSpeed * Time.deltaTime;
-
-            if (Vector3.Distance(moveDestination, transform.position) <= 0.1f)
+            GameManager.instance.RemoveTileHighlights();
+            if (Vector3.Distance(positionQueue[0], transform.position) > 0.1f)
             {
-                transform.position = moveDestination;
-                // TODO: Prompt user to action (Attack, Item, Wait etc)
-                actionTaken = true;
-                SetToGreyScale(true);
-                GameManager.instance.RemoveTileHighlights();
+                transform.position += (positionQueue[0] - transform.position).normalized * moveSpeed * Time.deltaTime;
+                if (Vector3.Distance(positionQueue[0], transform.position) <= 0.1f)
+                {
+                    transform.position = positionQueue[0];
+                    positionQueue.RemoveAt(0);
+                    if (positionQueue.Count == 0)
+                    {
+                        // TODO: Prompt user to action (Attack, Item, Wait etc)
+                        actionTaken = true;
+                        SetToGreyScale(true);
+                    }
+                }
             }
         }
 

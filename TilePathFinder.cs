@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-public class TileHighlight
+public class TilePathFinder
 {
-    public static List<Tile> FindHighlight(Tile originTile, int movementPoints)
+    public static List<Tile> FindPath(Tile originTile, Tile destinationTile)
     {
         List<Tile> closed = new List<Tile>();
         List<TilePath> open = new List<TilePath>();
@@ -11,7 +11,7 @@ public class TileHighlight
         originPath.AddTile(originTile);
         open.Add(originPath);
 
-        while(open.Count > 0)
+        while (open.Count > 0)
         {
             TilePath current = open[0];
             open.Remove(open[0]);
@@ -20,9 +20,10 @@ public class TileHighlight
             {
                 continue;
             }
-            if (current.costOfPath > movementPoints + 1)
+            if (current.lastTile == destinationTile)
             {
-                continue;
+                current.tiles.Remove(originTile);
+                return current.tiles;
             }
 
             closed.Add(current.lastTile);
@@ -39,7 +40,6 @@ public class TileHighlight
             }
         }
 
-        closed.Remove(originTile);
-        return closed;
+        return null;
     }
 }

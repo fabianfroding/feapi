@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class Player : MonoBehaviour
 {
@@ -22,6 +23,8 @@ public class Player : MonoBehaviour
     public int moveRange = 4;
 
     public bool actionTaken = false;
+
+    public List<Vector3> positionQueue = new List<Vector3>();
 
     private void Awake()
     {
