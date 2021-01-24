@@ -1,27 +1,58 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class Tile : MonoBehaviour
 {
     public Vector2 gridPosition = Vector2.zero;
+    public List<Tile> neighbors = new List<Tile>();
+    public int movementCost = 1;
 
-    private SpriteRenderer spriteRenderer;
-
-    void Start()
+    private void Start()
     {
-        //spriteRenderer = GetComponent<SpriteRenderer>();
+        GenerateNeighbors();
     }
 
-    void Update()
+    private void GenerateNeighbors()
     {
-        
+        neighbors = new List<Tile>();
+
+        // Up
+        if (gridPosition.y > 0)
+        {
+            Vector2 n = new Vector2(gridPosition.x, gridPosition.y - 1);
+            neighbors.Add(GameManager.instance.map[(int)n.x][(int)n.y]);
+        }
+        // Down
+        if (gridPosition.y < GameManager.instance.map.Count - 1)
+        {
+            Vector2 n = new Vector2(gridPosition.x, gridPosition.y + 1);
+            neighbors.Add(GameManager.instance.map[(int)n.x][(int)n.y]);
+        }
+
+        // Left
+        if (gridPosition.x > 0)
+        {
+            Vector2 n = new Vector2(gridPosition.x - 1, gridPosition.y);
+            neighbors.Add(GameManager.instance.map[(int)n.x][(int)n.y]);
+        }
+        // Right
+        if (gridPosition.x < GameManager.instance.map.Count - 1)
+        {
+            Vector2 n = new Vector2(gridPosition.x + 1, gridPosition.y);
+            neighbors.Add(GameManager.instance.map[(int)n.x][(int)n.y]);
+        }
     }
 
     private void OnMouseDown()
     {
-        //spriteRenderer.material.color = Color.white;
-        Debug.Log("Grid: " + gridPosition.x + ", " + gridPosition.y);
-        GameManager.instance.moveCurrentPlayer(this);
+        if (GameManager.instance.players[GameManager.instance.currentPlayerIndex].moving)
+        {
+            GameManager.instance.moveCurrentPlayer(this);
+        }
+        else if (GameManager.instance.players[GameManager.instance.currentPlayerIndex].attacking)
+        {
+            GameManager.instance.attackWithCurrentPlayer(this);
+        }
+        //Debug.Log("Grid: " + gridPosition.x + ", " + gridPosition.y);
     }
 }
