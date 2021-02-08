@@ -38,30 +38,16 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
-        if (hp <= 0)
-        {
-            Destroy(gameObject);
-        }
+        if (hp <= 0) Destroy(gameObject);
     }
 
     public void SetToGreyScale(bool flag)
     {
-        if (flag)
-        {
-            GetComponent<SpriteRenderer>().material = greyscaleMat;
-        }
-        else
-        {
-            GetComponent<SpriteRenderer>().material = defaultMat;
-        }
+        GetComponent<SpriteRenderer>().material = flag ? greyscaleMat : defaultMat;
     }
 
     public virtual void TurnUpdate()
     {
-        if (GameManager.instance.players[GameManager.instance.currentPlayerIndex] == this)
-        {
-
-        }
         if (actionTaken)
         {
             moving = false;

@@ -7,24 +7,18 @@ public class UserPlayer : Player
     {
         if (positionQueue.Count > 0)
         {
-            GameManager.instance.RemoveTileHighlights();
-            if (Vector3.Distance(positionQueue[0], transform.position) > 0.1f)
+            transform.position += (positionQueue[0] - transform.position).normalized * moveSpeed * Time.deltaTime;
+            if (Vector3.Distance(positionQueue[0], transform.position) <= 0.1f)
             {
-                transform.position += (positionQueue[0] - transform.position).normalized * moveSpeed * Time.deltaTime;
-                if (Vector3.Distance(positionQueue[0], transform.position) <= 0.1f)
+                transform.position = positionQueue[0];
+                positionQueue.RemoveAt(0);
+                if (positionQueue.Count == 0)
                 {
-                    transform.position = positionQueue[0];
-                    positionQueue.RemoveAt(0);
-                    if (positionQueue.Count == 0)
-                    {
-                        // TODO: Prompt user to action (Attack, Item, Wait etc)
-                        actionTaken = true;
-                        SetToGreyScale(true);
-                    }
+                    actionTaken = true;
+                    SetToGreyScale(true);
                 }
             }
         }
-
         base.TurnUpdate();
     }
 

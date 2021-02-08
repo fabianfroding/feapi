@@ -54,11 +54,11 @@ public class Tile : MonoBehaviour
     {
         if (GameManager.instance.players[GameManager.instance.currentPlayerIndex].moving)
         {
-            GameManager.instance.moveCurrentPlayer(this);
+            GameManager.instance.MoveCurrentPlayer(this);
         }
         else if (GameManager.instance.players[GameManager.instance.currentPlayerIndex].attacking)
         {
-            GameManager.instance.attackWithCurrentPlayer(this);
+            GameManager.instance.AttackWithCurrentPlayer(this);
         }
         else if (Input.GetMouseButton(1))
         {
