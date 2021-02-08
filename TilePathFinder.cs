@@ -1,8 +1,14 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 public class TilePathFinder
 {
-    public static List<Tile> FindPath(Tile originTile, Tile destinationTile)
+    public static List<Tile> FindPath(Tile originTile, Tile destinationTile) {
+        return FindPath(originTile, destinationTile, new Vector2[0]);
+    }
+
+    public static List<Tile> FindPath(Tile originTile, Tile destinationTile, Vector2[] occupied)
     {
         List<Tile> closed = new List<Tile>();
         List<TilePath> open = new List<TilePath>();
@@ -30,7 +36,7 @@ public class TilePathFinder
 
             foreach (Tile t in current.lastTile.neighbors)
             {
-                if (t.impassable)
+                if (t.impassable || occupied.Contains(t.gridPosition))
                 {
                     continue;
                 }

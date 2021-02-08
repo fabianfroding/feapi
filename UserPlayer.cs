@@ -43,7 +43,7 @@ public class UserPlayer : Player
                 moving = true;
                 attacking = false;
                 Debug.Log("MRange: " + moveRange);
-                GameManager.instance.HighlightTilesAt(gridPosition, Color.blue, moveRange);
+                GameManager.instance.HighlightTilesAt(gridPosition, Color.blue, moveRange, false);
             }
             else
             {

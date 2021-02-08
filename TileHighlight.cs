@@ -1,8 +1,15 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 public class TileHighlight
 {
     public static List<Tile> FindHighlight(Tile originTile, int movementPoints)
+    {
+        return FindHighlight(originTile, movementPoints, new Vector2[0]);
+    }
+
+    public static List<Tile> FindHighlight(Tile originTile, int movementPoints, Vector2[] occupied)
     {
         List<Tile> closed = new List<Tile>();
         List<TilePath> open = new List<TilePath>();
@@ -29,7 +36,7 @@ public class TileHighlight
 
             foreach (Tile t in current.lastTile.neighbors)
             {
-                if (t.impassable)
+                if (t.impassable || occupied.Contains(t.gridPosition))
                 {
                     continue;
                 }

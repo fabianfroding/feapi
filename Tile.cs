@@ -7,6 +7,7 @@ public class Tile : MonoBehaviour
     public List<Tile> neighbors = new List<Tile>();
     public int movementCost = 1;
     public bool impassable = false;
+    // TODO: Add fields to hold current unit. (If it holds a unit it means it's occupied).
 
     private void Start()
     {

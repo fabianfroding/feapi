@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -38,10 +39,12 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void HighlightTilesAt(Vector2 originLocation, Color highlightColor, int range)
+    public void HighlightTilesAt(Vector2 originLocation, Color highlightColor, int range, bool ignorePlayers = true)
     {
         Debug.Log("BRange: " + range);
-        List<Tile> highlightedTiles = TileHighlight.FindHighlight(map[(int)originLocation.x][(int)originLocation.y], range); // TODO: Put Unit movespeed instead of 4
+        List<Tile> highlightedTiles = new List<Tile>();
+        if (ignorePlayers) highlightedTiles = TileHighlight.FindHighlight(map[(int)originLocation.x][(int)originLocation.y], range); // TODO: Put Unit movespeed instead of 4
+        else highlightedTiles = TileHighlight.FindHighlight(map[(int)originLocation.x][(int)originLocation.y], range, players.Where(x => x.gridPosition != originLocation).Select(x => x.gridPosition).ToArray()); // TODO: Put Unit movespeed instead of 4
         foreach (Tile t in highlightedTiles)
         {
             t.GetComponent<SpriteRenderer>().material.color = highlightColor;
@@ -64,6 +67,7 @@ public class GameManager : MonoBehaviour
 
     private void OnGUI()
     {
+        Debug.Log("INDEX OnGUI: " + currentPlayerIndex);
         players[currentPlayerIndex].TurnOnGUI();
     }
 
@@ -82,6 +86,7 @@ public class GameManager : MonoBehaviour
         {
             currentPlayerIndex = 0;
         }
+        players[currentPlayerIndex].actionTaken = false;
     }
 
     public void moveCurrentPlayer(Tile destTile)
@@ -90,7 +95,9 @@ public class GameManager : MonoBehaviour
         {
             if (destTile.GetComponent<SpriteRenderer>().material.color != Color.white && !destTile.impassable)
             {
-                foreach (Tile t in TilePathFinder.FindPath(map[(int)players[currentPlayerIndex].gridPosition.x][(int)players[currentPlayerIndex].gridPosition.y], destTile))
+                RemoveTileHighlights();
+                players[currentPlayerIndex].moving = false;
+                foreach (Tile t in TilePathFinder.FindPath(map[(int)players[currentPlayerIndex].gridPosition.x][(int)players[currentPlayerIndex].gridPosition.y], destTile, players.Where(x => x.gridPosition != players[currentPlayerIndex].gridPosition).Select(x => x.gridPosition).ToArray()))
                 {
                     players[currentPlayerIndex].positionQueue.Add(map[(int)t.gridPosition.x][(int)t.gridPosition.y].transform.position);
                 }
@@ -127,6 +134,7 @@ public class GameManager : MonoBehaviour
                         players[currentPlayerIndex].gridPosition.y <= target.gridPosition.y + 1)
                     {
                         RemoveTileHighlights();
+                        players[currentPlayerIndex].attacking = false; //??? // PART 5: 17:30
                         bool hit = Random.Range(0.0f, 1.0f) <= players[currentPlayerIndex].accuracy;
                         if (hit)
                         {
@@ -181,7 +189,9 @@ public class GameManager : MonoBehaviour
         player2.name = "Player 2";
         players.Add(player2);
 
-        //AIPlayer aiPlayer = ((GameObject)Instantiate(aiUnitPrefab, new Vector3((mapSize - 1) - Mathf.Floor(mapSize / 2), -(mapSize - 1) + Mathf.Floor(mapSize / 2), 0), Quaternion.Euler(new Vector3()))).GetComponent<AIPlayer>();
-        //players.Add(aiPlayer);
+        UserPlayer aiPlayer = ((GameObject)Instantiate(unitPrefab, new Vector3((mapSize - 3) - Mathf.Floor(mapSize / 2), -1 + Mathf.Floor(mapSize / 2), 0), Quaternion.Euler(new Vector3()))).GetComponent<UserPlayer>();
+        aiPlayer.gridPosition = new Vector2(mapSize - 3, -1);
+        player2.name = "Carracosta";
+        players.Add(aiPlayer);
     }
 }

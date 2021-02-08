@@ -62,7 +62,12 @@ public class Player : MonoBehaviour
         {
 
         }
-        
+        if (actionTaken)
+        {
+            moving = false;
+            attacking = false;
+            GameManager.instance.nextTurn();
+        }
     }
 
     private void OnMouseDown()
