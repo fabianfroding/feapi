@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class UserPlayer : Player
+public class UserUnit : Unit
 {
 
     public override void TurnUpdate()
@@ -74,7 +74,7 @@ public class UserPlayer : Player
             actionTaken = false;
             moving = false;
             attacking = false;
-            GameManager.instance.nextTurn();
+            GameManager.instance.NextTurn();
         }
 
 

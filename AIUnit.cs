@@ -2,7 +2,7 @@
 using System.Linq;
 using UnityEngine;
 
-public class AIPlayer : Player
+public class AIUnit : Unit
 {
 	public override void TurnUpdate()
 	{
@@ -16,7 +16,7 @@ public class AIPlayer : Player
 				positionQueue.RemoveAt(0);
 				if (positionQueue.Count == 0)
 				{
-					actionTaken = true; ;
+					actionTaken = true;
 				}
 			}
 
@@ -27,10 +27,10 @@ public class AIPlayer : Player
 			List<Tile> attacktilesInRange = TileHighlight.FindHighlight(GameManager.instance.map[(int)gridPosition.x][(int)gridPosition.y], attackRange, true);
 			List<Tile> movementTilesInRange = TileHighlight.FindHighlight(GameManager.instance.map[(int)gridPosition.x][(int)gridPosition.y], moveRange + 1000);
 			//attack if in range and with lowest HP
-			if (attacktilesInRange.Where(x => GameManager.instance.players.Where(y => y.GetType() != typeof(AIPlayer) && y.hp > 0 && y != this && y.gridPosition == x.gridPosition).Count() > 0).Count() > 0)
+			if (attacktilesInRange.Where(x => GameManager.instance.players.Where(y => y.GetType() != typeof(AIUnit) && y.hp > 0 && y != this && y.gridPosition == x.gridPosition).Count() > 0).Count() > 0)
 			{
-				var opponentsInRange = attacktilesInRange.Select(x => GameManager.instance.players.Where(y => y.GetType() != typeof(AIPlayer) && y.hp > 0 && y != this && y.gridPosition == x.gridPosition).Count() > 0 ? GameManager.instance.players.Where(y => y.gridPosition == x.gridPosition).First() : null).ToList();
-				Player opponent = opponentsInRange.OrderBy(x => x != null ? -x.hp : 1000).First();
+				var opponentsInRange = attacktilesInRange.Select(x => GameManager.instance.players.Where(y => y.GetType() != typeof(AIUnit) && y.hp > 0 && y != this && y.gridPosition == x.gridPosition).Count() > 0 ? GameManager.instance.players.Where(y => y.gridPosition == x.gridPosition).First() : null).ToList();
+				Unit opponent = opponentsInRange.OrderBy(x => x != null ? -x.hp : 1000).First();
 
 				GameManager.instance.RemoveTileHighlights();
 				moving = false;
@@ -39,10 +39,10 @@ public class AIPlayer : Player
 
 				GameManager.instance.AttackWithCurrentPlayer(GameManager.instance.map[(int)opponent.gridPosition.x][(int)opponent.gridPosition.y]);
 			}
-			else if (!moving && movementTilesInRange.Where(x => GameManager.instance.players.Where(y => y.GetType() != typeof(AIPlayer) && y.hp > 0 && y != this && y.gridPosition == x.gridPosition).Count() > 0).Count() > 0)
+			else if (!moving && movementTilesInRange.Where(x => GameManager.instance.players.Where(y => y.GetType() != typeof(AIUnit) && y.hp > 0 && y != this && y.gridPosition == x.gridPosition).Count() > 0).Count() > 0)
 			{
-				var opponentsInRange = movementTilesInRange.Select(x => GameManager.instance.players.Where(y => y.GetType() != typeof(AIPlayer) && y.hp > 0 && y != this && y.gridPosition == x.gridPosition).Count() > 0 ? GameManager.instance.players.Where(y => y.gridPosition == x.gridPosition).First() : null).ToList();
-				Player opponent = opponentsInRange.OrderBy(x => x != null ? -x.hp : 1000).ThenBy(x => x != null ? TilePathFinder.FindPath(GameManager.instance.map[(int)gridPosition.x][(int)gridPosition.y], GameManager.instance.map[(int)x.gridPosition.x][(int)x.gridPosition.y]).Count() : 1000).First();
+				var opponentsInRange = movementTilesInRange.Select(x => GameManager.instance.players.Where(y => y.GetType() != typeof(AIUnit) && y.hp > 0 && y != this && y.gridPosition == x.gridPosition).Count() > 0 ? GameManager.instance.players.Where(y => y.gridPosition == x.gridPosition).First() : null).ToList();
+				Unit opponent = opponentsInRange.OrderBy(x => x != null ? -x.hp : 1000).ThenBy(x => x != null ? TilePathFinder.FindPath(GameManager.instance.map[(int)gridPosition.x][(int)gridPosition.y], GameManager.instance.map[(int)x.gridPosition.x][(int)x.gridPosition.y]).Count() : 1000).First();
 
 				GameManager.instance.RemoveTileHighlights();
 				moving = true;
@@ -59,7 +59,7 @@ public class AIPlayer : Player
 			}
 		}
 
-		if (/*actionPoints <= 1*/ actionTaken && (attacking || moving))
+		if (actionTaken && (attacking || moving))
 		{
 			moving = false;
 			attacking = false;
